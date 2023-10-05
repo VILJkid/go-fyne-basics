@@ -22,43 +22,11 @@ func main() {
 	window.Resize(fyne.NewSize(720, 480))
 	window.SetFixedSize(true)
 
-	var content *fyne.Container
-	var label *widget.Label
-	var btn, okButton *widget.Button
+	// var content *fyne.Container
+
 	// var initializeContent func()
 
-	initializeContent := func() {
-		fmt.Println("Inside initializeContent")
-		// Create a new label
-		label = widget.NewLabel("Click the Go button to start the speed tests.")
-		label.Alignment = fyne.TextAlignCenter
-
-		btn = widget.NewButton("Go", func() {
-			fmt.Println("Go Button clicked")
-
-			// Show a loading spinner
-			loadingSpinner := widget.NewProgressBarInfinite()
-
-			content = container.NewVBox(
-				label,
-				loadingSpinner,
-			)
-			window.SetContent(content)
-
-			// Perform three individual speed tests one by one
-			go triggerSpeedTest(window, content, label, loadingSpinner, okButton)
-		})
-
-		resultBox := widget.NewLabel("Hehe")
-
-		content = container.NewVBox(
-			label,
-			btn,
-			container.NewVBox(resultBox),
-		)
-	}
-
-	initializeContent()
+	content := initializeContent(window)
 
 	// Set the content of the window
 	window.SetContent(content)
@@ -67,13 +35,50 @@ func main() {
 	window.ShowAndRun()
 }
 
-func triggerSpeedTest(w fyne.Window, c *fyne.Container, label *widget.Label, loadingSpinner *widget.ProgressBarInfinite, okButton *widget.Button) {
+func initializeContent(window fyne.Window) *fyne.Container {
+	var label *widget.Label
+	var btn *widget.Button
+	fmt.Println("Inside initializeContent")
+	// Create a new label
+	label = widget.NewLabel("Click the Go button to start the speed tests.")
+	label.Alignment = fyne.TextAlignCenter
+
+	btn = widget.NewButton("Go", func() {
+		goButton(window, label)
+	})
+
+	resultBox := widget.NewLabel("Hehe")
+
+	return container.NewVBox(
+		label,
+		btn,
+		container.NewVBox(resultBox),
+	)
+}
+
+func goButton(window fyne.Window, label *widget.Label) {
+	fmt.Println("Go Button clicked")
+
+	// Show a loading spinner
+	loadingSpinner := widget.NewProgressBarInfinite()
+
+	content := container.NewVBox(
+		label,
+		loadingSpinner,
+	)
+	window.SetContent(content)
+
+	// Perform three individual speed tests one by one
+	go triggerSpeedTest(window, content, label, loadingSpinner)
+}
+
+func triggerSpeedTest(w fyne.Window, c *fyne.Container, label *widget.Label, loadingSpinner *widget.ProgressBarInfinite) {
 	performSpeedTest(w, label)
 	c.Remove(loadingSpinner)
 	c.Refresh()
 
 	// Add an "OK" button after displaying results
-	okButton = widget.NewButton("OK", clickOK)
+	okButton := widget.NewButton("OK", clickOK)
 	c.Add(okButton)
 }
 
