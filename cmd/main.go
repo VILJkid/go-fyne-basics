@@ -24,5 +24,6 @@ func main() {
 		}
 	}()
 
+	// Initialize the app
 	appInitializer.Initialize()
 }
